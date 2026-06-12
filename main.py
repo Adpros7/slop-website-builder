@@ -35,6 +35,7 @@ class Business(BaseModel):
     architecture: str
     other_info: str
     tech_stack: list[Service] = Field(..., description="specific service. eg. Next.js")
+    "specific service. eg. Next.js, react, Python, OpenAI, etc."
 
 
 @function_tool
