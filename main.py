@@ -7,6 +7,7 @@ from agents import (
     OpenAIChatCompletionsModel,
     Runner,
     function_tool,
+    enable_verbose_stdout_logging,
 )
 from openai import AsyncOpenAI
 from pydantic import BaseModel, Field
@@ -38,6 +39,9 @@ class Business(BaseModel):
     "specific service. eg. Next.js, react, Python, OpenAI, etc."
 
 
+enable_verbose_stdout_logging()
+
+
 @function_tool
 async def bash_command(full_command: str) -> tuple[str, str]:
     global tool_uses
@@ -63,6 +67,11 @@ When sayign the tech stack, be specific
 Don't just say, frontend, backend, core engine
 Say Next.js, python with Flask, and OpenAI fro example, and use whichever specific stack you want
 This is a great time to search it up
+USE YOUR TOOLS
+USE YOUR TOOLS
+USE YOUR TOOLS
+SEARCH EVRYTHIG UP
+YOU ARE A MASSIVE FALIURE IF YOU DONT SEARCH VERYHTING USING BASH_COMMAND and browser-use
 
 here is how to search the web:
 If you don't use tools, you are wrong
