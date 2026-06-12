@@ -1,9 +1,8 @@
 from asyncio import run
 import subprocess
-from typing import Literal
-
 from agents import (
     Agent,
+    ModelBehaviorError,
     OpenAIChatCompletionsModel,
     Runner,
     function_tool,
@@ -118,13 +117,6 @@ agent = Agent(
 
 async def main():
     while True:
-        output = await Runner().run(
-            agent,
-            "idea for saas company, you make it up. search up as much stuff as possible.",
-            max_turns=None,
-        )
-        print(output.final_output)
-        business: Business = output.final_output
         BANNED_SERVICE_PHRASES = [
             "Backend",
             "Backend ServiceDatabase",
@@ -132,6 +124,13 @@ async def main():
             "Frontend Service",
         ]
         try:
+            output = await Runner().run(
+                agent,
+                "idea for saas company, you make it up. search up as much stuff as possible.",
+                max_turns=None,
+            )
+            print(output.final_output)
+            business: Business = output.final_output
             if [i.name in BANNED_SERVICE_PHRASES for i in Business.tech_stack_specific]:
                 raise ValueError
 
@@ -140,7 +139,7 @@ async def main():
         here is the tech stack: {[i.name for i in business.tech_stack_specific]}""")
             break
 
-        except:
+        except ModelBehaviorError, ValueError:
             continue
 
 
