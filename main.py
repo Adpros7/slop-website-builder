@@ -34,7 +34,7 @@ class Business(BaseModel):
     long_description: str
     architecture: str
     other_info: str
-    tech_stack: list[Service] = Field(..., description="specific service. eg. Next.js")
+    tech_stack_specific: list[Service] = Field(...)
     "specific service. eg. Next.js, react, Python, OpenAI, etc."
 
 
@@ -59,6 +59,10 @@ You make up everything
 Don't talk to the user
 Just do what you are told
 Default to a digital application
+When sayign the tech stack, be specific
+Don't just say, frontend, backend, core engine
+Say Next.js, python with Flask, and OpenAI fro example, and use whichever specific stack you want
+This is a great time to search it up
 
 here is how to search the web:
 If you don't use tools, you are wrong
@@ -80,7 +84,7 @@ async def main():
     business: Business = output.final_output
     print(f"""The name of the app is {business.name}
 here is a description: {business.description}
-here is the tech stack: {[i.name for i in business.tech_stack]}""")
+here is the tech stack: {[i.name for i in business.tech_stack_specific]}""")
 
 
 run(main())
