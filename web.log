@@ -1,13 +1,2 @@
-TOOL CALLED: "browser-use open 'https://www.reddit.com/r/smallbusiness/comments/...' && browser-use state"
-TOOL CALLED: "search 'AI tools for small business pain points' site:reddit.com/r/smallbusiness`"
-TOOL CALLED: "search 'AI tools for internal knowledge management small business Pain points' site:reddit.com/r/smallbusiness`"
-TOOL CALLED: "search 'how small teams manage scattered documentation and knowledge base Pain Points' site:reddit.com/r/smallbusiness`"
-TOOL CALLED: "browser-use open 'https://www.quora.com' && browser-use state`"
-TOOL CALLED: "search 'AI conversational search for operational procedures small business Pain Points' site:reddit.com/r/smallbusiness`"
-TOOL CALLED: "browser-use open 'https://saaspoint.com/marketplace/ai-automation' && browser-use state"
-TOOL CALLED: "browser-use open 'https://www.gartner.com/en/research' && browser-use state"
-TOOL CALLED: "browser-use open 'https://hbr.org/topic/future-of-work' && browser-use state"
-TOOL CALLED: "browser-use open 'https://openai.com/blog' && browser-use state"
-TOOL CALLED: "browser-use open 'https://www.lawinfo.com/topics/legal-technology' && browser-use state"
-TOOL CALLED: "browser-use open 'https://www.legaltechreview.com/ai-compliance-risk' && browser-use state"
-TOOL CALLED: "browser-use open 'https://www.ibm.com/topics/ai-governance' && browser-use state"
+
+TOOL CALLED: 'browser-use search "unsolved problems in modern professional workflow"'

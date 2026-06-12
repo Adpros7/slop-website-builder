@@ -125,7 +125,16 @@ async def main():
         )
         print(output.final_output)
         business: Business = output.final_output
+        BANNED_SERVICE_PHRASES = [
+            "Backend",
+            "Backend ServiceDatabase",
+            "Database ServiceFrontend",
+            "Frontend Service",
+        ]
         try:
+            if [i.name in BANNED_SERVICE_PHRASES for i in Business.tech_stack_specific]:
+                raise ValueError
+
             print(f"""The name of the app is {business.name}
         here is a description: {business.description}
         here is the tech stack: {[i.name for i in business.tech_stack_specific]}""")
