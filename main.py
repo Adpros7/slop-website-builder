@@ -41,14 +41,25 @@ class Business(BaseModel):
 
 enable_verbose_stdout_logging()
 
+with open("./web.log", "w"):
+    pass
+
 
 @function_tool
 async def bash_command(full_command: str) -> tuple[str, str]:
     global tool_uses
+    if full_command.startswith("search "):
+        inp = f"browser-use open 'https://www.google.com/?q={full_command.replace('search ', '')} && browser-use state"
+
+    else:
+        inp = full_command
     cmd: subprocess.CompletedProcess[str] = subprocess.run(
-        args=full_command, capture_output=True, text=True, shell=True
+        args=inp, capture_output=True, text=True, shell=True
     )
     print(full_command)
+    with open("./web.log", "a") as f:
+        f.write(f"\nTOOL CALLED: {repr(full_command)}")
+
     return cmd.stdout, cmd.stderr
 
 
@@ -63,15 +74,26 @@ You make up everything
 Don't talk to the user
 Just do what you are told
 Default to a digital application
-When sayign the tech stack, be specific
+When sayign the tech stack/ Service, be specific
 Don't just say, frontend, backend, core engine
-Say Next.js, python with Flask, and OpenAI fro example, and use whichever specific stack you want
+Say Next.js, python with Flask, and OpenAI for example, and use whichever specific stack you want
+this is important
+Be very specific
+Don't jsut say frontend service
+say which one
+so like we have Next.js, react, svelte, etc.
+same goes for evrything else
 This is a great time to search it up
 USE YOUR TOOLS
 USE YOUR TOOLS
 USE YOUR TOOLS
 SEARCH EVRYTHIG UP
 YOU ARE A MASSIVE FALIURE IF YOU DONT SEARCH VERYHTING USING BASH_COMMAND and browser-use
+USE YOUR TOOLS
+STOP IGNORING THEM
+I can see if you used your tools or not
+be very verbose about when and whch tools you used
+search up everything
 
 here is how to search the web:
 If you don't use tools, you are wrong
@@ -85,15 +107,32 @@ Look at your tool options before using any. Be very verbose about which tools yo
  MOST IMPORTANT PART HERE IS HOW TO USE BROWSER USE SKILL: browser use skill: {skill} THIS IS THE MLOST IMPORTANT THING THIS IS DOCUMENTATION FOR browser-use
 """
 
-agent = Agent("gemma4Chat1", model=model, output_type=Business, tools=[bash_command])
+agent = Agent(
+    "gemma4Chat1",
+    model=model,
+    tools=[bash_command],
+    instructions=INSTRUCTIONS,
+    output_type=Business,
+)
 
 
 async def main():
-    output = await Runner().run(agent, "idea for saas company, you make it up")
-    business: Business = output.final_output
-    print(f"""The name of the app is {business.name}
-here is a description: {business.description}
-here is the tech stack: {[i.name for i in business.tech_stack_specific]}""")
+    while True:
+        output = await Runner().run(
+            agent,
+            "idea for saas company, you make it up. search up as much stuff as possible.",
+            max_turns=None,
+        )
+        print(output.final_output)
+        business: Business = output.final_output
+        try:
+            print(f"""The name of the app is {business.name}
+        here is a description: {business.description}
+        here is the tech stack: {[i.name for i in business.tech_stack_specific]}""")
+            break
+
+        except:
+            continue
 
 
 run(main())
