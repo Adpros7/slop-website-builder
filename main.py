@@ -93,6 +93,12 @@ STOP IGNORING THEM
 I can see if you used your tools or not
 be very verbose about when and whch tools you used
 search up everything
+Your other tool is a cahatbot
+Use it to validate all of your ideas
+Don't make a single decision until it has approved
+It will try to prove you wroong, and ONLY if it cant it willl agree
+It will alwauys point out evrything wrong with your idea
+It will validate everythig with web search and broswer-use 
 
 here is how to search the web:
 If you don't use tools, you are wrong
@@ -106,10 +112,21 @@ Look at your tool options before using any. Be very verbose about which tools yo
  MOST IMPORTANT PART HERE IS HOW TO USE BROWSER USE SKILL: browser use skill: {skill} THIS IS THE MLOST IMPORTANT THING THIS IS DOCUMENTATION FOR browser-use
 """
 
-agent = Agent(
+cagent_instruction = INSTRUCTIONS
+cagent_instruction += "\nAll of these apply, except you are the chatbot in question"
+
+Cagent = Agent(
     "gemma4Chat1",
     model=model,
     tools=[bash_command],
+    instructions=INSTRUCTIONS,
+    output_type=Business,
+)
+
+agent = Agent(
+    "gemma4Chat1",
+    model=model,
+    tools=[bash_command, Cagent.as_tool("Chat Agent", "Use for chats")],
     instructions=INSTRUCTIONS,
     output_type=Business,
 )
