@@ -93,7 +93,8 @@ STOP IGNORING THEM
 I can see if you used your tools or not
 be very verbose about when and whch tools you used
 search up everything
-Your other tool is a cahatbot
+Your other tool is a chatbot
+GIVE IT FULL CONTEXT BEFORE JUST ASKING IT
 Use it to validate all of your ideas
 Don't make a single decision until it has approved
 It will try to prove you wroong, and ONLY if it cant it willl agree
@@ -156,8 +157,9 @@ async def main():
         here is the tech stack: {[i.name for i in business.tech_stack_specific]}""")
             break
 
-        except ModelBehaviorError, ValueError:
+        except ModelBehaviorError, ValueError, AttributeError:
             continue
 
 
 run(main())
+ 
