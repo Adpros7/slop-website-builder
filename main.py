@@ -11,8 +11,7 @@ from agents import (
 )
 from openai import AsyncOpenAI
 from pydantic import BaseModel, Field
-import pydantic_core
-from syntaxmod import Stopwatch, Timer
+from syntaxmod import Stopwatch
 
 
 client = AsyncOpenAI(api_key="ollama", base_url="http://localhost:11434/v1")
@@ -166,7 +165,7 @@ async def main():
             )
             print(output.final_output)
             business: Business = output.final_output
-            if [i.name in BANNED_SERVICE_PHRASES for i in Business.tech_stack_specific]:
+            if [i.name in BANNED_SERVICE_PHRASES for i in business.tech_stack_specific]:
                 raise ValueError
 
             print(f"""The name of the app is {business.name}
@@ -174,7 +173,7 @@ async def main():
         here is the tech stack: {[i.name for i in business.tech_stack_specific]}""")
             return business
 
-        except ModelBehaviorError, ValueError, AttributeError:
+        except (ModelBehaviorError, ValueError, AttributeError):
             continue
 
 
@@ -202,9 +201,9 @@ Look at your tool options before using any. Be very verbose about which tools yo
 
 terminator = Agent("Big Boi", tools=[bash_command], model="gpt-5.5", output_type=IdeaValidation, instructions=TERMINATOR_INSTRUCTIONS)
 
-async def main():
+async def validate():
     validation = await Runner().run(terminator, f"DO you like this idea: {idea}")
     return validation.final_output_as(IdeaValidation)
 
-validated = run(main())
+validated = run(validate())
 
