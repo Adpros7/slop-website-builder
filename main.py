@@ -202,8 +202,24 @@ Look at your tool options before using any. Be very verbose about which tools yo
 terminator = Agent("Big Boi", tools=[bash_command], model="gpt-5.5", output_type=IdeaValidation, instructions=TERMINATOR_INSTRUCTIONS)
 
 async def validate():
-    validation = await Runner().run(terminator, f"DO you like this idea: {idea}")
-    return validation.final_output_as(IdeaValidation)
+    while True:
+        try:
+            validation = await Runner().run(terminator, f"DO you like this idea: {idea}")
+            errored = isinstance(validation.final_output, IdeaValidation)
+            if errored:
+                raise ValueError
+            
+            else:
+                return validation.final_output_as(IdeaValidation)
+        
+        except (ValueError, ModelBehaviorError, AttributeError):
+            continue
 
 validated = run(validate())
 
+while True:
+    if validated.good_idea == "Yes":
+        break
+
+    else:
+        run(validate())
