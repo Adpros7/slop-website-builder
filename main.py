@@ -1,5 +1,6 @@
 from asyncio import run
 import subprocess
+from typing import Literal
 from agents import (
     Agent,
     ModelBehaviorError,
@@ -11,6 +12,7 @@ from agents import (
 from openai import AsyncOpenAI
 from pydantic import BaseModel, Field
 import pydantic_core
+from syntaxmod import Stopwatch, Timer
 
 
 client = AsyncOpenAI(api_key="ollama", base_url="http://localhost:11434/v1")
@@ -43,6 +45,11 @@ enable_verbose_stdout_logging()
 with open("./web.log", "w"):
     pass
 
+stopwatch = Stopwatch()
+
+@function_tool
+def elapsed_time():
+    return stopwatch.get_elasped_time()
 
 @function_tool
 async def bash_command(full_command: str) -> tuple[str, str]:
@@ -100,6 +107,8 @@ Don't make a single decision until it has approved
 It will try to prove you wroong, and ONLY if it cant it willl agree
 It will alwauys point out evrything wrong with your idea
 It will validate everythig with web search and broswer-use 
+try to stay under 20 minutes, its okay if you go over
+to check how much time has elapsed, you can use elapsed_time, the tool
 
 here is how to search the web:
 If you don't use tools, you are wrong
@@ -119,7 +128,7 @@ cagent_instruction += "\nAll of these apply, except you are the chatbot in quest
 Cagent = Agent(
     "gemma4Chat1",
     model=model,
-    tools=[bash_command],
+    tools=[bash_command, elapsed_time],
     instructions=INSTRUCTIONS,
     output_type=Business,
 )
@@ -127,11 +136,14 @@ Cagent = Agent(
 agent = Agent(
     "gemma4Chat1",
     model=model,
-    tools=[bash_command, Cagent.as_tool("Chat Agent", "Use for chats")],
+    tools=[bash_command, Cagent.as_tool("Chat Agent", "Use for chats"), elapsed_time],
     instructions=INSTRUCTIONS,
     output_type=Business,
 )
 
+async def chat(input: str, context: str):
+    put = await Runner().run(Cagent, input=f"CONTEXT: {context} INPUT: {input}")
+    return put.final_output
 
 async def main():
     while True:
@@ -155,11 +167,17 @@ async def main():
             print(f"""The name of the app is {business.name}
         here is a description: {business.description}
         here is the tech stack: {[i.name for i in business.tech_stack_specific]}""")
-            break
+            return business
 
         except ModelBehaviorError, ValueError, AttributeError:
             continue
 
 
-run(main())
- 
+
+idea = run(main())
+
+terminator = Agent("Big Boi", tools=[bash_command])
+
+class Idea(BaseModel):
+    good_idea: Literal["Yes", "No"]
+    what_could_be_better: list[str]
