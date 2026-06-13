@@ -47,9 +47,11 @@ with open("./web.log", "w"):
 
 stopwatch = Stopwatch()
 
+
 @function_tool
 def elapsed_time():
     return stopwatch.get_elasped_time()
+
 
 @function_tool
 async def bash_command(full_command: str) -> tuple[str, str]:
@@ -107,7 +109,8 @@ Don't make a single decision until it has approved
 It will try to prove you wroong, and ONLY if it cant it willl agree
 It will alwauys point out evrything wrong with your idea
 It will validate everythig with web search and broswer-use 
-try to stay under 20 minutes, its okay if you go over
+try to stay under 20 minutes, its okay if you go over, but keep it MAX 25 min
+THS IS SUPER IMPORTNATNAT DONT GO GETTING STUCK IN A LOOP
 to check how much time has elapsed, you can use elapsed_time, the tool
 
 here is how to search the web:
@@ -141,9 +144,11 @@ agent = Agent(
     output_type=Business,
 )
 
+
 async def chat(input: str, context: str):
     put = await Runner().run(Cagent, input=f"CONTEXT: {context} INPUT: {input}")
     return put.final_output
+
 
 async def main():
     while True:
@@ -156,7 +161,7 @@ async def main():
         try:
             output = await Runner().run(
                 agent,
-                "idea for saas company, you make it up. search up as much stuff as possible.",
+                "idea for saas company, you make it up.",
                 max_turns=None,
             )
             print(output.final_output)
@@ -173,11 +178,33 @@ async def main():
             continue
 
 
-
 idea = run(main())
 
-terminator = Agent("Big Boi", tools=[bash_command])
-
-class Idea(BaseModel):
+class IdeaValidation(BaseModel):
     good_idea: Literal["Yes", "No"]
     what_could_be_better: list[str]
+
+TERMINATOR_INSTRUCTIONS = """you validate ideas
+if thje busienss idea is good, say so
+Search up everything about the topic and the name and stuff before making a decision
+
+
+here is how to search the web:
+If you don't use tools, you are wrong
+Mandatory tool uses of at least 5
+ ALways keep trying at least 5 times with different combinations and things, and use the browser-use skill.
+Look at your tool options before using any. Be very verbose about which tools you used, why, and if they failed. 
+ Use bash to run browser-use commands. 
+ browser-use state is a really important command. 
+ When opening urls using browser-use always surround the url in single quoutes.
+ After running browser-use open * run browser-use state
+ MOST IMPORTANT PART HERE IS HOW TO USE BROWSER USE SKILL: browser use skill: {skill} THIS IS THE MLOST IMPORTANT THING THIS IS DOCUMENTATION FOR browser-use"""
+
+terminator = Agent("Big Boi", tools=[bash_command], model="gpt-5.5", output_type=IdeaValidation, instructions=TERMINATOR_INSTRUCTIONS)
+
+async def main():
+    validation = await Runner().run(terminator, f"DO you like this idea: {idea}")
+    return validation.final_output_as(IdeaValidation)
+
+validated = run(main())
+
